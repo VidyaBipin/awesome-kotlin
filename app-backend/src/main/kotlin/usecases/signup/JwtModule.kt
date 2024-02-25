@@ -1,9 +1,8 @@
 package usecases.signup
 
-import ConfigModule
+import config.ConfigModule
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
-import di.Bean1
 import di.bean
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.hocon.Hocon
@@ -34,8 +33,10 @@ open class JwtModule(
 
 class GenerateJwt(
     private val jwtConfig: JwtModule.JwtConfig,
-) : Bean1<String, String> {
-    override fun invoke(id: String): String {
+) {
+    operator fun invoke(
+        id: String,
+    ): String {
         return JWT.create()
             .withAudience(jwtConfig.audience)
             .withIssuer(jwtConfig.issuer)

@@ -35,6 +35,12 @@ jobs:
         run: ./build/install/awesome-kotlin/bin/awesome-kotlin
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
+      - run: ./gradlew installDist
+      - uses: actions/upload-artifact@v4
+        with:
+          name: "Backend Application"
+          path: "app-backend/build/install/"
+          retention-days: 1
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
@@ -53,11 +59,14 @@ jobs:
           path: "readme/"
           retention-days: 1
   build-and-push-image:
-    if: ${{ github.ref == 'refs/heads/main' }}
     runs-on: ubuntu-latest
     needs: build
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: "Backend Application"
+          path: "app-backend/build/install/"
       - uses: actions/download-artifact@v4
         with:
           name: "Frontend Application"
@@ -66,7 +75,6 @@ jobs:
         with:
           name: "Readme"
           path: "readme/"
-      - run: ls -laR
       - name: "Set up Docker Buildx"
         uses: docker/setup-buildx-action@v3
       - name: "Login to GHCR"
@@ -75,13 +83,14 @@ jobs:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
           password:  ${{ secrets.GITHUB_TOKEN }}
+      - run: ls -lahR
       - name: "Build and push"
         uses: docker/build-push-action@v5
         with:
           platforms: linux/amd64,linux/arm64
           push: true
-          context: app-frontend
-          tags: ghcr.io/kotlinby/awesome-kotlin:main
+          context: .
+          tags: ghcr.io/kotlinby/awesome-kotlin:main-beta
       - name: "Deploy Readme"
         uses: peaceiris/actions-gh-pages@v3
         with:

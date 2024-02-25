@@ -1,13 +1,20 @@
 @file:JvmName("Application")
 
+import config.ConfigModule
 import di.bean
+import ktor.KtorFeaturesModule
+import lifecycle.LifecycleModule
+import metrics.MetricsModule
 import usecases.github.GithubModule
 import usecases.kug.KugModule
 import usecases.links.LinksModule
-import usecases.ping.PingModule
+import usecases.healthcheck.HealthcheckModule
+import usecases.rss.RssModule
 import usecases.signup.JwtModule
 import usecases.signup.LoginModule
 import usecases.signup.RegisterModule
+import usecases.stars_job.StarsJobModule
+import usecases.version.KotlinVersionModule
 import utils.close
 import utils.logger
 import java.lang.management.ManagementFactory
@@ -29,6 +36,10 @@ open class ApplicationFactory : AutoCloseable {
         YamlModule()
     }
 
+    open val xmlModule by lazy {
+        XmlModule()
+    }
+
     open val configModule by lazy {
         ConfigModule()
     }
@@ -41,6 +52,12 @@ open class ApplicationFactory : AutoCloseable {
 
     open val lifecycleModule by lazy {
         LifecycleModule()
+    }
+
+    open val starsJobModule by lazy {
+        StarsJobModule(
+            lifecycleModule = lifecycleModule,
+        )
     }
 
     open val jwtModule by lazy {
@@ -89,8 +106,8 @@ open class ApplicationFactory : AutoCloseable {
         )
     }
 
-    open val pingModule by lazy {
-        PingModule()
+    open val healthcheckModule by lazy {
+        HealthcheckModule()
     }
 
     open val linksModule by lazy {
@@ -98,26 +115,49 @@ open class ApplicationFactory : AutoCloseable {
     }
 
     open val metricsModule by lazy {
-        MetricsModule()
+        MetricsModule(
+            jdbcModule = jdbcModule,
+        )
+    }
+
+    open val rssModule by lazy {
+        RssModule()
+    }
+
+    open val kotlinVersionModule by lazy {
+        KotlinVersionModule(
+            xmlModule = xmlModule,
+            httpClientModule = httpClientModule,
+        )
+    }
+
+    open val ktorFeaturesModule by lazy {
+        KtorFeaturesModule(
+            jwtModule = jwtModule,
+            metricsModule = metricsModule,
+        )
     }
 
     open val serverModule by lazy {
         ServerModule(
             githubModule = githubModule,
-            pingModule = pingModule,
+            healthcheckModule = healthcheckModule,
             loginModule = loginModule,
             registerModule = registerModule,
             linksModule = linksModule,
             kugModule = kugModule,
-            jwtModule = jwtModule,
             metricsModule = metricsModule,
             lifecycleModule = lifecycleModule,
             configModule = configModule,
+            rssModule = rssModule,
+            kotlinVersionModule = kotlinVersionModule,
+            ktorFeaturesModule = ktorFeaturesModule,
         )
     }
 
     open suspend fun run() {
         val gracefulShutdown = lifecycleModule.gracefulShutdown.get
+        starsJobModule.starsJobScheduler.get.start()
         lifecycleModule.shutdownHandler.get.registerHook()
         flywayModule.flyway.get.migrate()
         serverModule.ktorServer.get.start(wait = false)

@@ -5,21 +5,24 @@ import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
 import kotlin.time.measureTimedValue
 
+/**
+ * This class is not thread-safe, make sure bean initialization happens in a single thread.
+ */
 class MutableBean<V>(
     private val initializer: () -> V,
     var name: String,
-) : Bean {
-    private var _get: V? = null
+) {
+    private var _value: V? = null
 
     val get: V
         get() {
-            val currentValue = _get
+            val currentValue = _value
             return if (currentValue == null) {
-                val newValue = measureTimedValue(initializer).let {
-                    log.info("Initializing bean $name took ${it.duration}")
-                    it.value
+                val newValue = measureTimedValue(initializer).let { timedValue ->
+                    log.info("Initializing bean $name took ${timedValue.duration}")
+                    timedValue.value
                 }
-                _get = newValue
+                _value = newValue
                 newValue
             } else {
                 currentValue
@@ -27,17 +30,17 @@ class MutableBean<V>(
         }
 
     val isInitialized: Boolean
-        get() = _get != null
+        get() = _value != null
 
     /**
      * Mock the bean with a custom function.
      * This is useful for testing purposes.
      */
     fun mock(
-        mockFn: (V) -> V,
+        mockFn: () -> V,
     ) {
         log.debug("Mocking bean $name")
-        _get = mockFn(get)
+        _value = mockFn()
     }
 
     /**
@@ -46,7 +49,7 @@ class MutableBean<V>(
      */
     fun setBeanValue(value: V) {
         log.debug("Setting new value to bean $name")
-        _get = value
+        _value = value
     }
 
     private companion object {
@@ -81,6 +84,9 @@ class ApplicationBeanDelegate<V>(
     }
 }
 
+/**
+ * Create a library with a name: to-been-injected
+ */
 fun <V> bean(initializer: () -> V) = ApplicationBeanDelegate(
     initializer = initializer,
 )
