@@ -43,7 +43,7 @@ class LinkSource {
 
 @Serializable
 data class LinkV1(
-    val name: String? = null,
+    val name: String,
     val href: String? = null,
     val desc: String? = null,
     val platforms: List<PlatformTypeV1> = emptyList(),
@@ -75,11 +75,11 @@ enum class LinkStateV1 {
 @Serializable
 data class SubcategoryV1(
     val name: String,
-    val links: MutableList<LinkV1>
+    val links: List<LinkV1>
 )
 
 @Serializable
 data class CategoryV1(
     val name: String,
-    val subcategories: MutableList<SubcategoryV1>
+    val subcategories: List<SubcategoryV1>
 )

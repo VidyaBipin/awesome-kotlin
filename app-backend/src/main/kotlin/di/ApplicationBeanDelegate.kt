@@ -19,7 +19,7 @@ class MutableBean<V>(
             val currentValue = _value
             return if (currentValue == null) {
                 val newValue = measureTimedValue(initializer).let { timedValue ->
-                    log.info("Initializing bean $name took ${timedValue.duration}")
+                    log.info("Initializing bean {} took {}", name, timedValue.duration)
                     timedValue.value
                 }
                 _value = newValue
@@ -38,9 +38,11 @@ class MutableBean<V>(
      */
     fun mock(
         mockFn: () -> V,
-    ) {
-        log.debug("Mocking bean $name")
-        _value = mockFn()
+    ): V {
+        log.warn("Mocking bean $name")
+        val value = mockFn()
+        _value = value
+        return value
     }
 
     /**
@@ -48,7 +50,7 @@ class MutableBean<V>(
      * This is useful for testing purposes.
      */
     fun setBeanValue(value: V) {
-        log.debug("Setting new value to bean $name")
+        log.warn("Setting new value to bean $name")
         _value = value
     }
 
@@ -90,3 +92,16 @@ class ApplicationBeanDelegate<V>(
 fun <V> bean(initializer: () -> V) = ApplicationBeanDelegate(
     initializer = initializer,
 )
+
+fun <T : AutoCloseable> MutableBean<T>.closeSafely(
+    block: () -> Unit,
+) {
+    if (isInitialized) {
+        try {
+            get.close()
+        } catch (e: Exception) {
+            logger(block)
+                .error("Error closing $name", e)
+        }
+    }
+}

@@ -82,11 +82,11 @@ function createListOfPlugins({NODE_ENV}, APP_DIR) {
       template: path.resolve(APP_DIR, "index.html"),
       hash: true
     }),
-    new CopyWebpackPlugin({
-      patterns: [
-        {from: path.resolve(APP_DIR, "icons")}
-      ]
-    }),
+    // new CopyWebpackPlugin({
+    //   patterns: [
+    //     {from: path.resolve(APP_DIR, "icons")}
+    //   ]
+    // }),
     new webpack.DefinePlugin({
       "process.env": {
         "NODE_ENV": JSON.stringify(NODE_ENV)

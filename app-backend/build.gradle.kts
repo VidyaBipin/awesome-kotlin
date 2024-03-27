@@ -60,6 +60,7 @@ dependencies {
     implementation("io.ktor:ktor-client-content-negotiation:2.3.9")
     implementation("io.ktor:ktor-server-auth-jwt:2.3.9")
     implementation("io.ktor:ktor-server-metrics-micrometer:2.3.9")
+    implementation("io.ktor:ktor-server-html-builder:2.3.9")
     implementation("io.micrometer:micrometer-registry-prometheus:1.12.3")
     implementation("io.ktor:ktor-server-call-logging:2.3.9")
     implementation("io.ktor:ktor-server-default-headers:2.3.9")

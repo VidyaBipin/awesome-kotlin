@@ -59,7 +59,7 @@ class LoginRoute(
                 call.response.cookies.append(Cookie(
                     name ="token",
                     value = token,
-                    secure = false,
+                    secure = true,
                     httpOnly = true,
                     maxAge = 30.days.inWholeSeconds.toInt(),
                     path = "/",

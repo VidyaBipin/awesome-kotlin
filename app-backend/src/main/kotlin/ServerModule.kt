@@ -19,6 +19,7 @@ import usecases.github.GithubModule
 import usecases.kug.KugModule
 import usecases.links.LinksModule
 import usecases.healthcheck.HealthcheckModule
+import usecases.kug.HomePageModule
 import usecases.rss.RssModule
 import usecases.signup.LoginModule
 import usecases.signup.RegisterModule
@@ -39,6 +40,7 @@ open class ServerModule(
     private val rssModule: RssModule,
     private val kotlinVersionModule: KotlinVersionModule,
     private val ktorFeaturesModule: KtorFeaturesModule,
+    private val homePageModule: HomePageModule,
 ) {
     open val unauthenticatedRoutes by bean {
         listOf(
@@ -53,13 +55,18 @@ open class ServerModule(
             registerModule.route.get,
 
             linksModule.route.get,
-            kugModule.getKugRoute.get,
             kugModule.updateKugsRoute.get,
 
             rssModule.rssRoute.get,
             rssModule.fullRssRoute.get,
 
             kotlinVersionModule.route.get,
+
+            homePageModule.homePageRoute.get,
+            homePageModule.resourcesPageRoute.get,
+            homePageModule.kugsPageRoute.get,
+            homePageModule.stylesRoute.get,
+            homePageModule.headLogoRoute.get,
         )
     }
 
@@ -80,9 +87,7 @@ open class ServerModule(
             }
 
             routing {
-                singlePageApplication {
-                    react(serverConfig.reactDistPath)
-                }
+                staticResources("/", "assets")
 
                 unauthenticatedRoutes.withEach {
                     install()

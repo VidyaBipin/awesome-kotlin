@@ -49,3 +49,6 @@ GET {{host}}/healthcheck
 
 ### Test
 GET {{host}}/test
+
+### Home Page
+GET {{host}}/home
