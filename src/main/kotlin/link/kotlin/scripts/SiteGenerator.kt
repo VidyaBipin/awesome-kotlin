@@ -40,8 +40,6 @@ class DefaultSiteGenerator(
             "$base/pages/github.css" to "$dist/github.css",
             "$base/pages/styles.css" to "$dist/styles.css",
             "$base/pages/highlight.min.js" to "$dist/highlight.min.js",
-            "$base/root/robots.txt" to "$dist/robots.txt",
-            "$base/root/awesome-kotlin.svg" to "$dist/awesome-kotlin.svg"
         )
     }
 
