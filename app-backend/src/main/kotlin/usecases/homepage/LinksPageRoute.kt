@@ -386,7 +386,7 @@ fun LI.Stars(
     if (link.star != null) {
         span(classes = "listitem_star") {
             span(classes = "listitem_star_count") {
-                +link.star
+                +link.star.toString()
             }
             img(classes = "listitem_star_icon") {
                 alt = ""
