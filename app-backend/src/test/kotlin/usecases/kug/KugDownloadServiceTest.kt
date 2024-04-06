@@ -1,27 +1,14 @@
 package usecases.kug
 
-import HttpClientModule
-import JdbcModule
-import JooqModule
-import YamlModule
-import config.ConfigModule
+import di.buildModule
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.AssertionFailureBuilder.assertionFailure
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
-import utils.close
 
 class KugDownloadServiceTest {
-    private val kugModule = KugModule(
-        httpClientModule = HttpClientModule(),
-        yamlModule = YamlModule(),
-        jooqModule = JooqModule(
-            jdbcModule = JdbcModule(
-                configModule = ConfigModule(),
-            ),
-        ),
-    )
+    private val kugModule = buildModule<KugModule>()
 
     @AfterEach
     fun close() {

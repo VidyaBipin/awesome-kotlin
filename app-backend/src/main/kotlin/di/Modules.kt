@@ -7,7 +7,7 @@ import kotlin.reflect.full.primaryConstructor
 import kotlin.reflect.typeOf
 import kotlin.time.measureTimedValue
 
-suspend inline fun <reified T : Any> buildModule(): T {
+inline fun <reified T : Any> buildModule(): T {
     val log = logger {}
 
     val moduleType = typeOf<T>()
