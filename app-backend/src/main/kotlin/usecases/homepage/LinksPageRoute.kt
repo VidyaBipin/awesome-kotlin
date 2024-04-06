@@ -455,6 +455,10 @@ fun HTML.CommonHead(
             rel = "stylesheet"
             href = "/styles.css"
         }
+        link {
+            rel = "stylesheet"
+            href = "css/bulma-prefixed.min.css"
+        }
         style {
 
         }

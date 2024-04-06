@@ -2,6 +2,7 @@ package usecases.kug
 
 import di.bean
 import usecases.homepage.HeadLogoRoute
+import usecases.homepage.LoginRoute
 import usecases.links.LinksModule
 import usecases.version.KotlinVersionModule
 
@@ -34,6 +35,10 @@ open class HomePageModule(
             path = "/kugs",
             type = LinksPageType.KUGS,
         )
+    }
+
+    val loginRoute by bean {
+        LoginRoute()
     }
 
     val stylesRoute by bean {

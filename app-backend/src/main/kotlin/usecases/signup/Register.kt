@@ -1,6 +1,6 @@
 package usecases.signup
 
-import JooqModule
+import db.JooqModule
 import at.favre.lib.crypto.bcrypt.BCrypt
 import at.favre.lib.crypto.bcrypt.LongPasswordStrategies
 import di.bean

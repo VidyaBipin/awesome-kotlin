@@ -1,3 +1,5 @@
+package db
+
 import di.bean
 import org.flywaydb.core.Flyway
 

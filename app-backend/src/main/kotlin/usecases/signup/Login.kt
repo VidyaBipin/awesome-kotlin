@@ -1,6 +1,6 @@
 package usecases.signup
 
-import JooqModule
+import db.JooqModule
 import at.favre.lib.crypto.bcrypt.BCrypt
 import di.bean
 import io.ktor.http.*
@@ -43,7 +43,7 @@ class LoginRoute(
     private val kotlinerDao: KotlinerDao,
 ) : KtorRoute {
     override fun Routing.install() {
-        post("/login") {
+        post("/api/login") {
             val request = call.receive<LoginBody>()
             val db = kotlinerDao.get(request.email)
 

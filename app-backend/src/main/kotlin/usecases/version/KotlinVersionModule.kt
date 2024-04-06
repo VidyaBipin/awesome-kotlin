@@ -1,7 +1,7 @@
 package usecases.version
 
 import HttpClientModule
-import XmlModule
+import serialization.XmlModule
 import di.bean
 
 open class KotlinVersionModule(

@@ -67,6 +67,7 @@ open class ServerModule(
             homePageModule.kugsPageRoute.get,
             homePageModule.stylesRoute.get,
             homePageModule.headLogoRoute.get,
+            homePageModule.loginRoute.get,
         )
     }
 

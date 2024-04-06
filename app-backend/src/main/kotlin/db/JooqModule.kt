@@ -1,3 +1,5 @@
+package db
+
 import di.bean
 import org.jooq.SQLDialect
 import org.jooq.impl.DSL

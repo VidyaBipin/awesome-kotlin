@@ -1,3 +1,5 @@
+package serialization
+
 import com.fasterxml.jackson.dataformat.xml.XmlMapper
 import com.fasterxml.jackson.module.kotlin.kotlinModule
 import di.bean

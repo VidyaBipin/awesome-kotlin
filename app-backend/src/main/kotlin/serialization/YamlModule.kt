@@ -1,3 +1,5 @@
+package serialization
+
 import com.charleskorn.kaml.Yaml
 import di.bean
 

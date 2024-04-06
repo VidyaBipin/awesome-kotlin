@@ -1,55 +1,64 @@
 package di
 
 import utils.logger
-import kotlin.reflect.KFunction
+import kotlin.reflect.KClass
 import kotlin.reflect.KType
+import kotlin.reflect.full.primaryConstructor
 import kotlin.reflect.typeOf
 import kotlin.time.measureTimedValue
 
-interface EntryPoint : AutoCloseable {
-    suspend fun run()
-}
+suspend inline fun <reified T : Any> buildModule(): T {
+    val log = logger {}
 
-@PublishedApi
-internal val log = logger {}
+    val moduleType = typeOf<T>()
 
-suspend inline fun <reified T : EntryPoint> runApplication(
-    vararg builder: KFunction<*>,
-) {
-    val beans = mutableMapOf<KType, Lazy<Any>>()
+    val beanTreeResult = measureTimedValue {
+        val beans = mutableMapOf<KType, Lazy<Any>>()
 
-    builder.forEach { module ->
-        beans[module.returnType] =
-            lazy(
-                mode = LazyThreadSafetyMode.NONE
-            ) {
-                val args = module.parameters
-                    .map { param ->
-                        val paramType = param.type
+        fun traverseModuleTree(
+            type: KType,
+        ) {
+            if (beans[type] == null) {
+                val clazz = type.classifier as KClass<*>
+                val constructor = clazz.primaryConstructor
+                    ?: error("Primary constructor not found for $clazz")
+                val parameters = constructor.parameters
 
-                        val result = measureTimedValue {
+                val createFunction = lazy(
+                    mode = LazyThreadSafetyMode.NONE,
+                ) {
+                    val args = parameters
+                        .map { param ->
+                            val paramType = param.type
+
                             beans[paramType]?.value
-                                ?: error("Type $paramType not found")
                         }
+                        .toTypedArray()
 
-                        log.info("Initializing bean {} took {}", paramType, result.duration)
+                    constructor.call(*args)
+                }
 
-                        result.value
-                    }
-                    .toTypedArray()
+                beans[type] = createFunction
 
-                module.call(*args) as Any
+                parameters.forEach { param ->
+                    traverseModuleTree(param.type)
+                }
             }
+        }
+
+        traverseModuleTree(moduleType)
+
+        beans as Map<KType, Lazy<Any>>
     }
 
-    val entryPointType = typeOf<T>()
+    log.info("Constructing module tree for module {} taken {}", moduleType, beanTreeResult.duration)
 
     val result = measureTimedValue {
-        beans[entryPointType]?.value
-            ?: error("Type $entryPointType not found")
+        beanTreeResult.value[moduleType]?.value
+            ?: error("Type $moduleType not found")
     }
 
-    log.debug("Constructing {} taken {}", entryPointType, result.duration)
+    log.info("Constructing module {} taken {}", moduleType, result.duration)
 
-    (result.value as EntryPoint).run()
+    return result.value as T
 }

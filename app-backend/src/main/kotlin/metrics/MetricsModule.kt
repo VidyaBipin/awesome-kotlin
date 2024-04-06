@@ -1,6 +1,6 @@
 package metrics
 
-import JdbcModule
+import db.JdbcModule
 import di.bean
 import io.micrometer.core.instrument.binder.db.PostgreSQLDatabaseMetrics
 import io.micrometer.core.instrument.binder.jvm.*

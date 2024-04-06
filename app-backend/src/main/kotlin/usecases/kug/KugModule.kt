@@ -1,8 +1,8 @@
 package usecases.kug
 
 import HttpClientModule
-import JooqModule
-import YamlModule
+import db.JooqModule
+import serialization.YamlModule
 import di.bean
 
 open class KugModule(
