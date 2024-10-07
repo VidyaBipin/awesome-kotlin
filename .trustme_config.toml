@@ -1,4 +1,4 @@
 [scan_config]
 ignore = [
-    'app-backend/src/main/kotlin/jooq/main/tables/*'
+    '**/tables/'
 ]
